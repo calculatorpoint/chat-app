@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile document",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "email": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "status": { "type": "string" },
+        "isOnline": { "type": "boolean" },
+        "lastSeen": { "type": "number", "description": "Timestamp ms" },
+        "isAdmin": { "type": "boolean" },
+        "adminRole": { "type": "string", "enum": ["super_admin", "moderator", null] },
+        "isBanned": { "type": "boolean" },
+        "createdAt": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "A conversation between users",
+      "type": "object",
+      "properties": {
+        "participants": { "type": "array", "description": "Array of user IDs" },
+        "isGroup": { "type": "boolean" },
+        "groupName": { "type": "string" },
+        "groupAvatarURL": { "type": "string" },
+        "groupAdmins": { "type": "array", "description": "Array of user IDs who are admins" },
+        "typingUsers": { "type": "array", "description": "Array of user IDs currently typing" },
+        "lastMessageId": { "type": "string" },
+        "lastMessageText": { "type": "string" },
+        "lastMessageTime": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["participants", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A chat message",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "mediaUrl": { "type": "string" },
+        "fileType": { "type": "string", "enum": ["image", "pdf", "audio", "video", "file"] },
+        "fileName": { "type": "string" },
+        "voiceNoteUrl": { "type": "string" },
+        "replyToId": { "type": "string", "description": "ID of the message being replied to" },
+        "reactions": { "type": "object", "description": "Map of user ID -> emoji string" },
+        "readBy": { "type": "array", "description": "Array of user IDs who have read the message" },
+        "status": { "type": "string", "enum": ["sent", "delivered", "read"] },
+        "isEdited": { "type": "boolean" },
+        "editedAt": { "type": "number" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["senderId", "createdAt"]
+    },
+    "Call": {
+      "title": "Call",
+      "description": "A WebRTC call signaling document",
+      "type": "object",
+      "properties": {
+        "callerId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "status": { "type": "string", "enum": ["calling", "ringing", "connected", "ended"] },
+        "offer": { "type": "object" },
+        "answer": { "type": "object" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["callerId", "receiverId", "status", "createdAt"]
+    },
+    "Report": {
+      "title": "Report",
+      "description": "A user-submitted report against another user's message",
+      "type": "object",
+      "properties": {
+        "messageId": { "type": "string" },
+        "chatId": { "type": "string" },
+        "messageText": { "type": "string" },
+        "reporterId": { "type": "string" },
+        "reportedUserId": { "type": "string" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "resolved"] },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["messageId", "reporterId", "reportedUserId", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Administrative actions taken in the system",
+      "type": "object",
+      "properties": {
+        "adminId": { "type": "string" },
+        "action": { "type": "string" },
+        "target": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["adminId", "action", "target", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles"
+    },
+    "chats/{chatId}": {
+      "schema": { "$ref": "#/entities/Chat" },
+      "description": "Stores chat metadata"
+    },
+    "chats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores messages within a chat"
+    },
+    "calls/{callId}": {
+      "schema": { "$ref": "#/entities/Call" },
+      "description": "Stores call signaling"
+    },
+    "reports/{reportId}": {
+      "schema": { "$ref": "#/entities/Report" },
+      "description": "Stores abuse reports"
+    },
+    "auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditLog" },
+      "description": "Stores admin activity logs"
+    }
+  }
+}

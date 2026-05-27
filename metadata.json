@@ -1,0 +1,9 @@
+{
+  "name": "NovaChat",
+  "description": "Ultra-modern WebRTC Video Calling and Chat App with an Admin Panel",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
